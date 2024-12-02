@@ -1,0 +1,86 @@
+	<div ng-include="'customer/navbar-customer.html'"></div>
+		
+	<div ng-controller="CouponController as couponCtrl">
+	
+	<div class="container">
+	
+	<div class="jumbotron text-center"><h2>My Coupons</h2></div>
+	
+		<form>
+	        <div class="form-group">
+	          <div class="input-group">
+	            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+	            <input type="text" class="form-control" placeholder="Search Coupon by Name..." ng-model="searchCoupon.couponName">
+	          </div>
+	        </div>
+      	</form>
+	
+		<div class="table-responsive">
+			<div class="form-row">
+				<form ng-submit="getAllPurchasedCouponsByType()">
+					<div class="form-group col-sm-4">
+					<label class="control-label" style="margin-top:7px">Filter by Coupon Type:</label>
+					<div class="input-group">
+						<select ng-model="couponTypeToGet" ng-options="type for type in couponTypes" ng-focus="clearFiltersInputs()" class="form-control" required>
+							<option value="" selected disabled></option>
+						</select>
+						<div class="input-group-btn">
+							<input type="submit" value="Filter" class="btn btn-info">
+						</div>
+					</div>
+					</div>
+				</form>
+				<form ng-submit="getAllPurchasedCouponsByLimitedPrice()">
+					<div class="form-group col-sm-4">
+					<label class="control-label" style="margin-top:7px">Filter by Highest Price:</label>
+					<div class="input-group">
+						<input type="number" ng-model="couponsLimitedPriceToGet" ng-focus="clearFiltersInputs()" class="form-control" required>
+						<div class="input-group-btn">
+							<input type="submit" value="Filter" class="btn btn-info">
+						</div>
+					</div>
+					</div>
+				</form>
+				<form ng-submit="getAllPurchasedCouponsByCustomerId()">
+					<div class="form-group col-sm-4">
+						<input type="submit" value="Show All Coupons" ng-click="clearFiltersInputs()" class="btn btn-info" style="margin-top:32px">
+					</div>
+				</form>
+			</div>
+			
+			<div ng-show="!customerCouponsFound" ng-bind-html="customerCouponsNotFoundMsg" class="well well-sm text-center"></div>
+			<table id="customerCouponsTable" ng-show="customerCouponsFound" class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Coupon Id</th>
+						<th>Company Id</th>
+						<th>Coupon Name</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Coupon Type</th>
+						<th>Description</th>
+						<th>Price</th>
+						<th>Image</th>
+						<th>Quantity</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="coupon in customerCoupons | toArray:false | filter:searchCoupon">
+						<td>{{coupon.couponId}}</td>
+						<td>{{coupon.companyId}}</td>
+						<td>{{coupon.couponName}}</td>
+						<td>{{coupon.startDate}}</td>
+						<td>{{coupon.endDate}}</td>
+						<td>{{coupon.couponType}}</td>
+						<td>{{coupon.description}}</td>
+						<td>{{coupon.price}}</td>
+						<td><img alt="image" ng-src="{{coupon.image}}" class="img-responsive"></td>
+						<td>{{coupon.quantity}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		  
+	</div>
+	
+	</div>

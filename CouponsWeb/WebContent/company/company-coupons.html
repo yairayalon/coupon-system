@@ -1,0 +1,314 @@
+	<div ng-include="'company/navbar-company.html'"></div>
+
+ 	<div ng-controller="CouponController as couponCtrl">
+		
+	<div class="container" style="align-items: center; justify-content: center">
+	
+		<div class="jumbotron text-center"><h2>Manage Coupons</h2></div>
+	
+		<form>
+	        <div class="form-group">
+	          <div class="input-group">
+	            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+	            <input type="text" class="form-control" placeholder="Search Coupon by Name..." ng-model="searchCoupon.couponName">
+	            <span class="input-group-btn">
+	            <button ng-click="setCouponDetailsForCreate()" data-toggle="modal" data-target="#createCoupon" class="btn btn-success">
+	            <span class="glyphicon glyphicon-plus"></span> Create new Coupon
+	            </button>
+	            </span>
+	          </div>
+	        </div>
+      	</form>
+	
+		<div class="table-responsive">
+			<div class="form-row">
+				<form ng-submit="getAllCompanyCouponsByType()">
+					<div class="form-group col-sm-3">
+					<label class="control-label" style="margin-top:7px">Filter by Coupon Type:</label>
+					<div class="input-group">
+						<select ng-model="couponTypeToGet" ng-options="type for type in couponTypes" ng-focus="clearFiltersInputs()" class="form-control" required>
+							<option value="" selected disabled></option>
+						</select>
+						<div class="input-group-btn">
+							<input type="submit" value="Filter" class="btn btn-info">
+						</div>
+					</div>
+					</div>
+				</form>
+				<form ng-submit="getAllCompanyCouponsByLimitedPrice()">
+					<div class="form-group col-sm-3">
+					<label class="control-label" style="margin-top:7px">Filter by Highest Price:</label>
+					<div class="input-group">
+						<input type="number" ng-model="couponsLimitedPriceToGet" ng-focus="clearFiltersInputs()" class="form-control" required>
+						<div class="input-group-btn">
+							<input type="submit" value="Filter" class="btn btn-info">
+						</div>
+					</div>
+					</div>
+				</form>
+				<form ng-submit="getAllCompanyCouponsByLimitedEndDate()">
+					<div class="form-group col-sm-3">
+					<label class="control-label" style="margin-top:7px">Filter by Farthest End Date:</label>
+					<div class="input-group">
+						<input type="date" ng-model="couponsLimitedEndDateToGet" ng-focus="clearFiltersInputs()" class="form-control" required>
+						<div class="input-group-btn">
+							<input type="submit" value="Filter" class="btn btn-info">
+						</div>
+					</div>
+					</div>
+				</form>
+				<form ng-submit="getAllCompanyCouponsByCompanyId()">
+					<div class="form-group col-sm-3">
+						<input type="submit" value="Show All Coupons" ng-click="clearFiltersInputs()" class="btn btn-info" style="margin-top:32px">
+					</div>
+				</form>
+			</div>
+		
+			<div ng-show="!couponsFound" ng-bind-html="couponsNotFoundMsg" class="well well-sm text-center"></div>
+			<table id="couponsTable" ng-show="couponsFound" class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Coupon Id</th>
+						<th>Company Id</th>
+						<th>Coupon Name</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Amount</th>
+						<th>Coupon Type</th>
+						<th>Description</th>
+						<th>Price</th>
+						<th>Image</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="coupon in companyCoupons | toArray:false | filter:searchCoupon">
+						<td>{{coupon.couponId}}</td>
+						<td>{{coupon.companyId}}</td>
+						<td>{{coupon.couponName}}</td>
+						<td>{{coupon.startDate}}</td>
+						<td>{{coupon.endDate}}</td>
+						<td>{{coupon.amount}}</td>
+						<td>{{coupon.couponType}}</td>
+						<td>{{coupon.description}}</td>
+						<td>{{coupon.price}}</td>
+						<td><img alt="image" ng-src="{{coupon.image}}" class="img-responsive"></td>
+						<td>
+						<div class="col-sm-6">
+						<button ng-click="setCouponDetailsForRemove(coupon.couponName, coupon.couponId)" data-toggle="modal" data-target="#removeCoupon" class="btn btn-danger">
+						Remove <span style="margin-left:2px" class="glyphicon glyphicon-trash"></span>
+						</button>
+						</div>
+						<div class="col-sm-6">
+						<button ng-click="setCouponDetailsForUpdate(coupon.couponName, coupon.couponId)" data-toggle="modal" data-target="#updateCoupon" class="btn btn-primary">
+						Update<span style="margin-left:7px" class="glyphicon glyphicon-edit"></span>
+						</button>
+						</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="createCoupon" role="dialog">
+		  <div class="modal-dialog modal-lg">
+		  
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Create Coupon</h4>
+		      </div>
+		      <div class="modal-body">
+		      
+      			<!-- Success alert -->
+                <div class="alert alert-success text-center" role="alert"
+                  ng-show="createCouponStatus=='success'">
+                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+                  Coupon "{{toCreateCoupon.couponName}}" Created Successfully
+                </div>
+	                
+	            <div ng-hide="createCouponStatus=='success'">
+		        	<h3 class="text-center">Please Enter Details for Creating a new Coupon:</h3>
+					<form ng-submit="createCoupon()" class="form-horizontal">
+		
+		                <!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="createCouponStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Create Coupon Failed: {{errorMessage}}
+		                </div>
+		                
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Coupon Name:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toCreateCoupon.couponName" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Start Date:</label>
+							<div class="col-sm-9">
+					        	<input type="date" ng-model="toCreateCoupon.startDate" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">End Date:</label>
+							<div class="col-sm-9">
+					        	<input type="date" ng-model="toCreateCoupon.endDate" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Amount:</label>
+							<div class="col-sm-9">
+					        	<input type="number" ng-model="toCreateCoupon.amount" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Select Coupon Type:</label>
+							<div class="col-sm-9">
+					        	<select ng-model="toCreateCoupon.couponType" ng-options="type for type in couponTypes" class="form-control" required>
+									<option value="" selected disabled></option>
+								</select>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Description:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toCreateCoupon.description" class="form-control" required>
+					    	</div>
+					    </div>
+			   		    <div class="form-group">
+							<label class="col-sm-3 control-label">Price:</label>
+							<div class="col-sm-9">
+					        	<input type="number" ng-model="toCreateCoupon.price" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Image:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toCreateCoupon.image" class="form-control" required>
+					    	</div>
+					    </div>
+						<div class="form-group">
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Create</button>
+					      </div>
+					    </div>
+					</form>
+				</div>
+			</div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+			</div>
+		</div>
+		</div>
+		
+		  <!-- Modal -->
+ 		  <div class="modal fade" id="removeCoupon" role="dialog">
+		    <div class="modal-dialog modal-lg">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Remove Coupon</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+	        		<!-- Success alert -->
+	                <div class="alert alert-success text-center" role="alert"
+	                  ng-show="removeCouponStatus=='success'">
+	                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+	                  Coupon "{{toRemoveCouponName}}" Removed Successfully
+	                </div>
+		        
+		        	<div ng-hide="removeCouponStatus=='success'">
+		          	<h3 class="text-center">Are you Sure you Want to Remove Coupon: "{{toRemoveCouponName}}"?</h3>
+					<form ng-submit="removeCoupon()" class="form-horizontal">
+					
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="removeCouponStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Remove Coupon Failed: {{errorMessage}}
+		                </div>
+		                
+						<div class="form-group">
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Remove</button>
+					      </div>
+					    </div>
+					</form>
+					</div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		
+		  <!-- Modal -->
+		  <div class="modal fade" id="updateCoupon" role="dialog">
+		    <div class="modal-dialog modal-lg">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Update Coupon</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+	        		<!-- Success alert -->
+	                <div class="alert alert-success text-center" role="alert"
+	                  ng-show="updateCouponStatus=='success'">
+	                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+	                  Coupon "{{toUpdateCouponName}}" Updated Successfully
+	                </div>
+		        
+		        	<div ng-hide="updateCouponStatus=='success'">
+		          	<h3 class="text-center">Please Enter Details to Update Coupon: "{{toUpdateCouponName}}"</h3>
+					<form ng-submit="updateCoupon()" class="form-horizontal">
+						
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="updateCouponStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Update Coupon Failed: {{errorMessage}}
+		                </div>
+		                
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">End Date:</label>
+							<div class="col-sm-9">
+					        	<input type="date" ng-model="toUpdateCoupon.endDate" class="form-control" required>
+					    	</div>
+					    </div>
+					 	<div class="form-group">
+							<label class="col-sm-3 control-label">Price:</label>
+							<div class="col-sm-9">
+					        	<input type="number" ng-model="toUpdateCoupon.price" class="form-control" required>
+					    	</div>
+					    </div>
+						<div class="form-group">        
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Update</button>
+					      </div>
+					    </div>
+					</form>
+					</div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		  
+	</div>
+		
+	</div>

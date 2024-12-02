@@ -1,0 +1,92 @@
+	<div ng-include="'customer/navbar-customer.html'"></div>
+		
+	<div ng-controller="CustomerController as customerCtrl">
+	
+	<div class="container">
+	
+		<div class="jumbotron text-center"><h2>My Details</h2></div>
+	
+		<div class="table-responsive">
+			<table id="customerTable" class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Customer Id</th>
+						<th>Customer Name</th>
+						<th>Password</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{customer.customerId}}</td>
+						<td>{{customer.customerName}}</td>
+						<td>{{customer.password}}</td>
+						<td>
+						<button ng-click="setCustomerDetailsForUpdate(customer.customerName, customer.customerId)" data-toggle="modal" data-target="#updateCustomer" class="btn btn-primary">
+						Update<span style="margin-left:7px" class="glyphicon glyphicon-edit"></span>
+						</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		  <!-- Modal -->
+		  <div class="modal fade" id="updateCustomer" role="dialog">
+		    <div class="modal-dialog modal-lg">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Update Details</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+	        		<!-- Success alert -->
+	                <div class="alert alert-success text-center" role="alert"
+	                  ng-show="updateCustomerStatus=='success'">
+	                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+	                  Details Updated Successfully
+	                </div>
+		        
+		        	<div ng-hide="updateCustomerStatus=='success'">
+		          	<h3 class="text-center">Please Enter a new Password:</h3>
+					<form ng-submit="updateCustomer()" class="form-horizontal">
+					
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="updateCustomerStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Update Details Failed: {{errorMessage}}
+		                </div>
+					
+						<div class="form-group">
+							<label class="col-sm-3 control-label">New Password:</label>
+							<div class="col-sm-9">
+					        	<input type="password" ng-model="toUpdateCustomer.password" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="alert alert-warning text-center">
+					    Password must contain the following: Minimum eight characters, at least one uppercase letter,
+					    one lowercase letter, one number and one special character, without any whitespaces
+					    </div>
+						<div class="form-group">
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Update</button>
+					      </div>
+					    </div>
+					</form>
+					</div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		  
+	</div>
+		
+	</div>

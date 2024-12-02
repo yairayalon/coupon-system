@@ -1,0 +1,66 @@
+	<div ng-controller="RegisterController as registerCtrl">
+
+	<div class="container">
+
+        <div id="registerbox-customer" style="margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="panel-title">Customer Registration</div>
+                            <div style="float:right; font-size: 85%; position: relative; top:-10px"><a id="loginlink" href="#/">Login</a></div>
+                        </div>  
+                        <div class="panel-body">
+                        
+                        	<div ng-show="registerCustomerStatus=='success'">
+	                        	<!-- Success alert -->
+				                <div class="alert alert-success text-center" role="alert">
+				                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+				                  Customer "{{customer.customerName}}" Created Successfully
+				                </div>
+				                
+				                <div align="center">
+					                <a id="loginlink" href="#/" class="btn btn-info">
+					                Login
+					                </a>
+				                </div>
+			                </div>
+                        
+                        	<div ng-hide="registerCustomerStatus=='success'">
+                            <form ng-submit="registerCustomer()" id="registerform-customer" class="form-horizontal" role="form">
+                            
+                            	<!-- Failure alert -->
+				                <div class="alert alert-danger text-center" role="alert"
+				                  ng-show="registerCustomerStatus=='failure'">
+				                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+				                  Register Failed: {{errorMessage}}
+				                </div>
+                                
+                                <div style="margin-bottom: 25px" class="input-group">
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                                        <input id="register-username" type="text" class="form-control" placeholder="Customer Name (Username)" ng-model="customer.customerName" required>                                        
+                                </div>
+                                
+                                <div style="margin-bottom: 25px" class="input-group">
+                                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                                        <input id="register-password" type="password" class="form-control" placeholder="Password" ng-model="customer.password" required>
+                                </div>
+		                        <div class="alert alert-warning text-center">
+							    Password must contain the following: Minimum eight characters, at least one uppercase letter,
+							    one lowercase letter, one number and one special character, without any whitespaces
+							    </div>
+                                
+                                <div class="form-group">
+                                    <!-- Button --->
+                                    <div align="center">
+                                        <button id="btn-register" type="submit" class="btn btn-info">Register</button>
+                                    </div>
+                                </div>
+                            </form>
+                            </div>
+                         </div>
+                    </div>
+
+               </div>
+    
+    </div>
+    
+    </div>

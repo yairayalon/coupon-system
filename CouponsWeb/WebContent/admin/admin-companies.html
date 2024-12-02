@@ -1,0 +1,231 @@
+	<div ng-include="'admin/navbar-admin.html'"></div>
+		
+	<div ng-controller="CompanyController as companyCtrl">
+	
+	<div class="container">
+	
+		<div class="jumbotron text-center"><h2>Manage Companies</h2></div>
+	
+		<form>
+	        <div class="form-group">
+	          <div class="input-group">
+	            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+	            <input type="text" class="form-control" placeholder="Search Company by Name..." ng-model="searchCompany.companyName">
+	            <span class="input-group-btn">            
+	            <button ng-click="setCompanyDetailsForCreate()" data-toggle="modal" data-target="#createCompany" class="btn btn-success">
+	            <span class="glyphicon glyphicon-plus"></span> Create new Company
+	            </button>
+	            </span>
+	          </div>
+	        </div>
+      	</form>
+	
+		<div class="table-responsive">
+			<div ng-show="!allCompaniesFound" ng-bind-html="allCompaniesNotFoundMsg" class="well well-sm text-center"></div>
+			<table id="allCompaniesTable" ng-show="allCompaniesFound" class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Company Id</th>
+						<th>Company Name</th>
+						<th>Password</th>
+						<th>Email</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="company in allCompanies | toArray:false | filter:searchCompany">
+						<td>{{company.companyId}}</td>
+						<td>{{company.companyName}}</td>
+						<td>{{company.password}}</td>
+						<td>{{company.email}}</td>
+						<td>
+						<button ng-click="setCompanyDetailsForRemove(company.companyName, company.companyId)" data-toggle="modal" data-target="#removeCompany" class="btn btn-danger">
+						Remove <span style="margin-left:2px" class="glyphicon glyphicon-trash"></span>
+						</button>
+						<button ng-click="setCompanyDetailsForUpdate(company.companyName, company.companyId)" data-toggle="modal" data-target="#updateCompany" class="btn btn-primary">
+						Update<span style="margin-left:7px" class="glyphicon glyphicon-edit"></span>
+						</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<!-- Modal -->
+		<div class="modal fade" id="createCompany" role="dialog">
+		  <div class="modal-dialog modal-lg">
+		  
+		    <!-- Modal content-->
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal">&times;</button>
+		        <h4 class="modal-title">Create Company</h4>
+		      </div>
+		      <div class="modal-body">
+		      
+      			<!-- Success alert -->
+                <div class="alert alert-success text-center" role="alert"
+                  ng-show="createCompanyStatus=='success'">
+                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+                  Company "{{toCreateCompany.companyName}}" Created Successfully
+                </div>
+		      
+		      	<div ng-hide="createCompanyStatus=='success'">
+		        	<h3 class="text-center">Please Enter Details for Creating a new Company:</h3>
+					<form ng-submit="createCompany()" class="form-horizontal">
+					
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="createCompanyStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Create Company Failed: {{errorMessage}}
+		                </div>
+					
+						<div class="form-group">
+							<label class="col-sm-3 control-label">Company Name:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toCreateCompany.companyName" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Password:</label>
+							<div class="col-sm-9">
+					        	<input type="password" ng-model="toCreateCompany.password" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="alert alert-warning text-center">
+					    Password must contain the following: Minimum eight characters, at least one uppercase letter,
+					    one lowercase letter, one number and one special character, without any whitespaces
+					    </div>
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Email:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toCreateCompany.email" class="form-control" required>
+					    	</div>
+					    </div>
+						<div class="form-group">        
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Create</button>
+					      </div>
+					    </div>
+					</form>
+				</div>
+			</div>
+			<div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+			</div>
+		</div>
+		</div>
+		
+		  <!-- Modal -->
+ 		  <div class="modal fade" id="removeCompany" role="dialog">
+		    <div class="modal-dialog modal-lg">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Remove Company</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+	        		<!-- Success alert -->
+	                <div class="alert alert-success text-center" role="alert"
+	                  ng-show="removeCompanyStatus=='success'">
+	                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+	                  Company "{{toRemoveCompanyName}}" Removed Successfully
+	                </div>
+		        
+		        	<div ng-hide="removeCompanyStatus=='success'">
+		          	<h3 class="text-center">Are you Sure you Want to Remove Company: "{{toRemoveCompanyName}}"?</h3>
+					<form ng-submit="removeCompany()" class="form-horizontal">
+					
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="removeCompanyStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Remove Company Failed: {{errorMessage}}
+		                </div>
+					
+						<div class="form-group">        
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Remove</button>
+					      </div>
+					    </div>
+					</form>
+					</div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		
+		  <!-- Modal -->
+		  <div class="modal fade" id="updateCompany" role="dialog">
+		    <div class="modal-dialog modal-lg">
+		    
+		      <!-- Modal content-->
+		      <div class="modal-content">
+		        <div class="modal-header">
+		          <button type="button" class="close" data-dismiss="modal">&times;</button>
+		          <h4 class="modal-title">Update Company</h4>
+		        </div>
+		        <div class="modal-body">
+		        
+	        		<!-- Success alert -->
+	                <div class="alert alert-success text-center" role="alert"
+	                  ng-show="updateCompanyStatus=='success'">
+	                  <strong><span class="glyphicon glyphicon-ok-circle"></span></strong>
+	                  Company "{{toUpdateCompanyName}}" Updated Successfully
+	                </div>
+		        
+		        	<div ng-hide="updateCompanyStatus=='success'">
+		          	<h3 class="text-center">Please Enter Details to Update Company: "{{toUpdateCompanyName}}"</h3>
+					<form ng-submit="updateCompany()" class="form-horizontal">
+					
+						<!-- Failure alert -->
+		                <div class="alert alert-danger text-center" role="alert"
+		                  ng-show="updateCompanyStatus=='failure'">
+		                  <strong><span class="glyphicon glyphicon-remove-circle"></span></strong>
+		                  Update Company Failed: {{errorMessage}}
+		                </div>
+					
+					    <div class="form-group">
+							<label class="col-sm-3 control-label">Password:</label>
+							<div class="col-sm-9">
+					        	<input type="password" ng-model="toUpdateCompany.password" class="form-control" required>
+					    	</div>
+					    </div>
+					    <div class="alert alert-warning text-center">
+					    Password must contain the following: Minimum eight characters, at least one uppercase letter,
+					    one lowercase letter, one number and one special character, without any whitespaces
+					    </div>
+					 	<div class="form-group">
+							<label class="col-sm-3 control-label">Email:</label>
+							<div class="col-sm-9">
+					        	<input type="text" ng-model="toUpdateCompany.email" class="form-control" required>
+					    	</div>
+					    </div>
+						<div class="form-group">        
+					      <div align="center">
+					        <button type="submit" class="btn btn-default">Update</button>
+					      </div>
+					    </div>
+					</form>
+					</div>
+		        </div>
+		        <div class="modal-footer">
+		          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		        </div>
+		      </div>
+		      
+		    </div>
+		  </div>
+		  
+	</div>
+		
+	</div>

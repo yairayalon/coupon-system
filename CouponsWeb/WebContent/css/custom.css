@@ -1,0 +1,18 @@
+.jumbotron {
+	background-color: lightGoldenRodYellow ;
+}
+
+.table > thead > tr > th {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.table > tbody > tr > td {
+	text-align: center;
+	vertical-align: middle;
+}
+
+.table > tbody > tr > td > img {
+	height: 100px;
+	width: 100px;
+}

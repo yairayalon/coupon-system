@@ -1,4 +1,4 @@
-# Coupon System Project: Streamlining Discounts for Businesses and Customers
+# Coupon Hub: Connecting Businesses and Customers Through Seamless Deals
 
 ## Overview
 
